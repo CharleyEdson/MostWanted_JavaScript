@@ -64,7 +64,7 @@ function mainMenu(person, people) {
     // Routes our application based on the user's input
     switch (displayOption) {
         case "info":
-            //! TODO #1: Utilize the displayPerson function //////////////////////////////////////////
+            //! *COMPLETE* TODO #1: Utilize the displayPerson function //////////////////////////////////////////
             // HINT: Look for a person-object stringifier utility function to help
             let personInfo = displayPerson(person[0]);
             alert(personInfo);
@@ -73,7 +73,8 @@ function mainMenu(person, people) {
             //! TODO #2: Declare a findPersonFamily function //////////////////////////////////////////
             // HINT: Look for a people-collection stringifier utility function to help
             let personFamily = findPersonFamily(person[0], people);
-            alert(personFamily);
+            let personFamilyString = displayPeople(personFamily)
+            alert(personFamilyString);
             break;
         case "descendants":
             //! TODO #3: Declare a findPersonDescendants function //////////////////////////////////////////
@@ -140,8 +141,16 @@ function displayPeople(people) {
 function displayPerson(person) {
     let personInfo = `First Name: ${person.firstName}\n`;
     personInfo += `Last Name: ${person.lastName}\n`;
+    personInfo += `Gender: ${person.gender}\n`;
+    personInfo += `Date of Birth: ${person.dob}\n`;
+    personInfo += `Height: ${person.height}\n`;
+    personInfo += `Weight: ${person.weight}\n`;
+    personInfo += `Eye Color: ${person.eyeColor}\n`;
+    personInfo += `Occupation: ${person.occupation}\n`;
+
     //! TODO #1a: finish getting the rest of the information to display //////////////////////////////////////////
-    alert(personInfo);
+    //alert(personInfo);
+    return personInfo;
 }
 // End of displayPerson()
 
@@ -184,3 +193,47 @@ function chars(input) {
 
 //////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
 // Any additional functions can be written below this line 👇. Happy Coding! 😁
+
+function findPersonFamily(personObj={}, peoplearr=[]) {
+    let spouse = findById(personObj, peoplearr, "currentSpouse"); 
+    let parents = findParents(personObj, peoplearr);
+    let siblings = findSiblings(personObj, peoplearr);
+    
+    return spouse.concat(parents).concat(siblings)
+    
+}
+    
+function findById (personObj, peopleArr, personPropStr){
+    return peopleArr.filter(function(item){return personObj[personPropStr] === item.id})
+}
+
+function findParents(personObj, peopleArr){
+    return peopleArr.filter(function(item){
+        return personObj.parents.includes(item.id)
+    })
+}
+
+function findSiblings(personObj, peopleArr){
+    return peopleArr.filter(function(item){
+        return personObj.parents.includes(item.parents[0]) || personObj.parents.includes(item.parents[1])
+    })
+}
+
+/* This function will be useful for STRINGIFYING a collection of person-objects
+* first and last name properties in order to easily send the information
+* to the user in the form of an alert().
+* @param {Array} people        A collection of person objects.
+*/
+function displayPeople(people) {
+   alert(
+       people
+           .map(function (person) {
+               return `${person.firstName} ${person.lastName}`;
+           })
+           .join("\n")
+   );
+}
+
+
+//TODO recursion for descendants, look for umbrella code demo
+//TODO 4 - look at mario kart (can be about 10 lines. taking a list of people from 22, if gets a list and filters down a smaller list, and we keep passing the list to a smaller self.) Need to find 1 person. send them right to main menu.
