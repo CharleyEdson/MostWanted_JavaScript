@@ -15,7 +15,7 @@
  * our user to decide whether to search by name or by traits.
  * @param {Array} people        A collection of person objects.
  */
-function app(people) {
+ function app(people) {
     // promptFor() is a custom function defined below that helps us prompt and validate input more easily
     // Note that we are chaining the .toLowerCase() immediately after the promptFor returns its value
     let searchType = promptFor(
@@ -262,6 +262,21 @@ function recursiveFindDescendants(personObj, peopleArr, descendants = []){
 
 //TODO recursion for descendants, look for umbrella code demo
 //TODO 4 - look at mario kart (can be about 10 lines. taking a list of people from 22, if gets a list and filters down a smaller list, and we keep passing the list to a smaller self.) Need to find 1 person. send them right to main menu.
+
+function traitsfunction(searchOfPeople){
+    if (searchOfPeople.length === 1){
+        displayPeople(searchOfPeople)
+        return searchOfPeople
+    }
+    if (searchOfPeople > 1){
+        displayPeople(searchOfPeople)
+        alert('Do you see anyone here from this list?')
+        let searchOfPeople = searchByTraits(searchOfPeople)
+    }
+    
+    
+}
+
 
 function searchByTraits(people){
     let numberOfTraits = howManyTraits()
