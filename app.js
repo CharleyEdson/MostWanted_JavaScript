@@ -31,7 +31,13 @@ function app(people) {
         case "no":
             //! TODO #4: Declare a searchByTraits (multiple traits) function //////////////////////////////////////////
                 //! TODO #4a: Provide option to search for single or multiple //////////////////////////////////////////
+            
             searchResults = searchByTraits(people);
+            let traitPeople = displayPeople(searchResults);
+            if (searchResults.length > 1){
+                app(searchResults)
+            }
+            alert(traitPeople);
             break;
         default:
             // Re-initializes the app() if neither case was hit above. This is an instance of recursion.
@@ -72,15 +78,17 @@ function mainMenu(person, people) {
         case "family":
             //! TODO #2: Declare a findPersonFamily function //////////////////////////////////////////
             // HINT: Look for a people-collection stringifier utility function to help
+            //COMPLETE
             let personFamily = findPersonFamily(person[0], people);
-            let personFamilyString = displayPeople(personFamily)
+            let personFamilyString = displayPeople(personFamily);
             alert(personFamilyString);
             break;
         case "descendants":
             //! TODO #3: Declare a findPersonDescendants function //////////////////////////////////////////
             // HINT: Review recursion lecture + demo for bonus user story
-            let personDescendants = findPersonDescendants(person[0], people);
-            alert(personDescendants);
+            let personDescendants = recursiveFindDescendants(person[0], people);
+            let personDescendantsString = displayPeople(personDescendants);
+            alert(personDescendantsString);
             break;
         case "restart":
             // Restart app() from the very beginning
@@ -194,10 +202,10 @@ function chars(input) {
 //////////////////////////////////////////* End Of Starter Code *//////////////////////////////////////////
 // Any additional functions can be written below this line 👇. Happy Coding! 😁
 
-function findPersonFamily(personObj={}, peoplearr=[]) {
-    let spouse = findById(personObj, peoplearr, "currentSpouse"); 
-    let parents = findParents(personObj, peoplearr);
-    let siblings = findSiblings(personObj, peoplearr);
+function findPersonFamily(personObj={}, peopleArr=[]) {
+    let spouse = findById(personObj, peopleArr, "currentSpouse"); 
+    let parents = findParents(personObj, peopleArr);
+    let siblings = findSiblings(personObj, peopleArr);
     
     return spouse.concat(parents).concat(siblings)
     
@@ -219,21 +227,115 @@ function findSiblings(personObj, peopleArr){
     })
 }
 
+//relationship between the parent and their descendents- 
+//if 'id' is included in the lookup's 'parents' array. Like findsibilings function
+
+function findPersonDescendants(personObj=[], peopleArr=[]){
+    let descendants = findDescendants(personObj, peopleArr)
+    return descendants
+}
+
+function findDescendants(personObj, peopleArr){
+    return peopleArr.filter(function(item){
+        return personObj.id === item.parents[0] || personObj.id === item.parents[1]
+    })
+}
+
+function recusiveFindPersonDescendants(personObj=[], peopleArr=[]){
+    let descendants = recursiveFindDescendants(personObj, peopleArr)
+    return descendants
+}
+
+function recursiveFindDescendants(personObj, peopleArr, descendants = []){
+    let descendantsSubArray = peopleArr.filter(function(item){
+        return personObj.id === item.parents[0] || personObj.id === item.parents[1]
+    })
+    descendants = descendants.concat(descendantsSubArray)
+    if (descendantsSubArray.length ===0) {
+        return descendants
+    }
+    for (let i = 0; i < descendantsSubArray.length; i++){
+        descendants = descendants.concat(recursiveFindDescendants(descendantsSubArray[i], peopleArr))
+    }
+    return descendants;
+}
+
+//TODO recursion for descendants, look for umbrella code demo
+//TODO 4 - look at mario kart (can be about 10 lines. taking a list of people from 22, if gets a list and filters down a smaller list, and we keep passing the list to a smaller self.) Need to find 1 person. send them right to main menu.
+
+function searchByTraits(people){
+    let numberOfTraits = howManyTraits()
+    if (numberOfTraits === 1){
+        let trait = whichTraits()
+        let traitSelection = prompt("Select what you are looking for.")
+        let arrayofPeople = people.filter(function(item){
+            if(item[trait].includes(traitSelection)){
+                return true;
+            } 
+        });  
+        return arrayofPeople
+    }
+    if (numberOfTraits === 2){
+        let traitOne = whichTraits()
+        let traitTwo = whichTraits()
+        let traitSelectionOne = prompt("Select what you are looking for.")
+        let traitSelectionTwo = prompt("Select what you are looking for.")
+        let arrayOfPeople = people.filter(function(item){
+            return item[traitOne].includes(traitSelectionOne) && item[traitTwo].includes(traitSelectionTwo)
+    }); 
+    return arrayOfPeople
+    }
+    let displayPeople = displayPeople(arrayOfPeople)
+    alert(displayPeople)
+    if (arrayOfPeople.length > 1){
+        app(arrayOfPeople)
+    }
+    return arrayOfPeople
+}
+
+
+
+
+function howManyTraits(){
+    let numberOfTraits = promptFor("How many traits would you like to search for?", chars)
+    numberOfTraits = parseInt(numberOfTraits)
+    return numberOfTraits
+}
+
+function whichTraits(){
+    //for (let i = 0; i <number; i++){
+        let whichTrait = promptFor("Which trait would you like to search for?\
+        \nPress 1 for: gender\
+        \nPress 2 for: Eye Color\
+        \nPress 3 for: Occupation", 
+        chars)
+        let numTrait = parseInt(whichTrait)
+        if (numTrait === 1){
+            let trait = 'gender';
+            return trait}
+        if (numTrait === 2){
+                let trait = 'eyeColor'
+                return trait}
+        if (numTrait === 3){
+                let trait = 'occupation'
+                return trait}     
+        }
+
+    
+
+
 /* This function will be useful for STRINGIFYING a collection of person-objects
 * first and last name properties in order to easily send the information
 * to the user in the form of an alert().
 * @param {Array} people        A collection of person objects.
 */
 function displayPeople(people) {
-   alert(
-       people
-           .map(function (person) {
-               return `${person.firstName} ${person.lastName}`;
-           })
-           .join("\n")
-   );
-}
-
-
-//TODO recursion for descendants, look for umbrella code demo
-//TODO 4 - look at mario kart (can be about 10 lines. taking a list of people from 22, if gets a list and filters down a smaller list, and we keep passing the list to a smaller self.) Need to find 1 person. send them right to main menu.
+    alert(
+        people
+            .map(function (person) {
+                return `${person.firstName} ${person.lastName}`;
+            })
+            .join("\n")
+    );
+ }
+ 
